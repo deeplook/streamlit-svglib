@@ -20,9 +20,9 @@ Run the app:
 import base64
 import io
 
-from reportlab.graphics import renderPDF
+import requests
 import streamlit as st
-
+from reportlab.graphics import renderPDF
 from svglib.svglib import svg2rlg
 
 
@@ -37,8 +37,8 @@ st.set_page_config(
 # sidebar
 
 st.sidebar.header("Settings")
-svg_path = st.sidebar.text_input("SVG File Path")
-if st.sidebar.button("Read"):
+svg_url = st.sidebar.text_input("SVG URL")
+if st.sidebar.button("Load"):
     pass
 
 # main 
@@ -56,8 +56,8 @@ col1, col2 = st.columns(2)
 with col1:
     with st.expander("SVG"):
         svg_code = ""
-        if svg_path:
-            svg_code = open(svg_path).read()
+        if svg_url:
+            svg_code = requests.get(svg_url).text
         svg = st.text_area("Code", value=svg_code, height=400)
         st.markdown(
             "Paste SVG code above or edit it and click below "
