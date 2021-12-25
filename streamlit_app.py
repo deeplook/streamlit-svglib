@@ -52,9 +52,9 @@ st.markdown(
 )
 
 pdf_content = b""
-col1, col2 = st.beta_columns(2)
+col1, col2 = st.columns(2)
 with col1:
-    with st.beta_expander("SVG"):
+    with st.expander("SVG"):
         svg_code = ""
         if svg_path:
             svg_code = open(svg_path).read()
@@ -68,7 +68,7 @@ with col1:
                 drawing = svg2rlg(io.StringIO(svg))
                 pdf_content = renderPDF.drawToString(drawing)
 with col2:
-    with st.beta_expander("PDF"):
+    with st.expander("PDF"):
         if pdf_content:
             base64_pdf = base64.b64encode(pdf_content).decode("utf-8")
             pdf_display = (
