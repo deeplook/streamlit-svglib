@@ -1,38 +1,78 @@
-from collections import namedtuple
-import altair as alt
-import math
-import pandas as pd
+#!/usr/bin/env python
+
+"""
+A demo for using svglib inside a small Streamlit application.
+
+This app is running in a webbrowser and allows to open and edit a SVG source file,
+convert it to PDF and display that all on the same page. The PDF rendering happens
+via some browser plugin preinstalled in the browser or installed by the user or
+Streamlit.
+
+Install Streamlit:
+
+    $ pip install streamlit
+
+Run the app:
+
+    $ streamlit run st_svg2pdf_app.py
+"""
+
+import base64
+import io
+
+from reportlab.graphics import renderPDF
 import streamlit as st
 
-"""
-# Welcome to Streamlit!
-
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
-
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
-
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+from svglib.svglib import svg2rlg
 
 
-with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
+# config
 
-    Point = namedtuple('Point', 'x y')
-    data = []
+st.set_page_config(
+    page_title="SVG to PDF Converter",
+    layout="wide",
+    initial_sidebar_state="auto",
+)
 
-    points_per_turn = total_points / num_turns
+# sidebar
 
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
+st.sidebar.header("Settings")
+svg_path = st.sidebar.text_input("SVG File Path")
+if st.sidebar.button("Read"):
+    pass
 
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+# main 
+
+st.title('SVG to PDF')
+
+st.markdown(
+    "An experimental [streamlit.io](https://streamlit.io) UI "
+    "for [svg2pdf](https://github.com/deeplook/svglib) (based "
+    "on [reportlab.com](https://reportlab.com))."
+)
+
+pdf_content = b""
+col1, col2 = st.beta_columns(2)
+with col1:
+    with st.beta_expander("SVG"):
+        svg_code = ""
+        if svg_path:
+            svg_code = open(svg_path).read()
+        svg = st.text_area("Code", value=svg_code, height=400)
+        st.markdown(
+            "Paste SVG code above or edit it and click below "
+            "to convert it!"
+        )
+        if st.button("Convert", key=2):
+            if svg:
+                drawing = svg2rlg(io.StringIO(svg))
+                pdf_content = renderPDF.drawToString(drawing)
+with col2:
+    with st.beta_expander("PDF"):
+        if pdf_content:
+            base64_pdf = base64.b64encode(pdf_content).decode("utf-8")
+            pdf_display = (
+                f'<embed src="data:application/pdf;base64,{base64_pdf}" '
+                'width="500" height="400" type="application/pdf">'
+            )
+            st.markdown(pdf_display, unsafe_allow_html=True)
