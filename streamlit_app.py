@@ -14,7 +14,7 @@ Install Streamlit:
 
 Run the app:
 
-    $ streamlit run st_svg2pdf_app.py
+    $ streamlit run streamlit_app.py
 """
 
 import base64
@@ -37,7 +37,7 @@ st.set_page_config(
 # sidebar
 
 st.sidebar.header("Settings")
-svg_url = st.sidebar.text_input("SVG URL")
+svg_url = st.sidebar.text_input("SVG URL", value="https://upload.wikimedia.org/wikipedia/commons/0/03/Flag_of_Italy.svg")
 if st.sidebar.button("Load"):
     pass
 
@@ -57,15 +57,15 @@ with col1:
     with st.expander("SVG"):
         svg_code = ""
         if svg_url:
-            svg_code = requests.get(svg_url).text
-        svg = st.text_area("Code", value=svg_code, height=400)
+            svg_code = requests.get(svg_url).content
+        svg = st.text_area("Code", value=svg_code.decode("utf-8"), height=400)
         st.markdown(
             "Paste SVG code above or edit it and click below "
             "to convert it!"
         )
         if st.button("Convert", key=2):
             if svg:
-                drawing = svg2rlg(io.StringIO(svg))
+                drawing = svg2rlg(io.BytesIO(svg.encode("utf-8")))
                 pdf_content = renderPDF.drawToString(drawing)
 with col2:
     with st.expander("PDF"):
