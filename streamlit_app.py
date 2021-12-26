@@ -37,18 +37,22 @@ st.set_page_config(
 # sidebar
 
 st.sidebar.header("Settings")
-svg_url = st.sidebar.text_input("SVG URL", value="https://upload.wikimedia.org/wikipedia/commons/0/03/Flag_of_Italy.svg")
+url = "https://upload.wikimedia.org/wikipedia/commons/d/d3/Flag_of_Kiribati.svg"
+svg_url = st.sidebar.text_input("SVG URL", value=url)
 if st.sidebar.button("Load"):
     pass
 
 # main 
 
-st.title('SVG to PDF')
+st.title('Streamlit for Svglib')
 
 st.markdown(
-    "An experimental [streamlit.io](https://streamlit.io) UI "
-    "for [svg2pdf](https://github.com/deeplook/svglib) (based "
-    "on [reportlab.com](https://reportlab.com))."
+    "An interactive [Streamlit](https://streamlit.io) UI for illustrating "
+    "examples of [Svg2pdf](https://github.com/deeplook/svglib) (based on "
+    "[Reportlab](https://reportlab.com)) in the spirit of the "
+    "[Streamlit Geospatial](https://streamlit.gishub.org) collection of "
+    "demos. Contributions are welcome on "
+    "[GitHub](https://github.com/deeplook/streamlit-svglib/)."
 )
 
 pdf_content = b""
