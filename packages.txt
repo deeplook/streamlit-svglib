@@ -1,0 +1,6 @@
+libcairo2-dev
+libffi-dev
+pkg-config
+libxml2-dev
+libxslt1-dev
+libjpeg-dev
